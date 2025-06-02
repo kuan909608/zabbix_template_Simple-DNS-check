@@ -1,0 +1,77 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: 1bea584e15e049289772fb826e1a855f
+      name: Templates/kuan
+  templates:
+    - uuid: a10c2aac0d9149bc81add9e076aca784
+      template: 'Simple DNS check'
+      name: 'Simple DNS check'
+      groups:
+        - name: Templates/kuan
+      items:
+        - uuid: beab74cdec4945269a94639279c926bf
+          name: 'DNS service performance'
+          key: 'net.dns.perf[{$DNS_SERVER_IP},{$QUERY_DNS_RECORD},{$RECORD_TYPE},{$QUERY_TIMEOUT},{$TRIES_NUMBER},{$USE_PROTOCOL}]'
+          history: 365d
+          value_type: FLOAT
+          tags:
+            - tag: dns
+              value: status
+        - uuid: cbd395101e1a4807a598310899092250
+          name: 'DNS record status'
+          key: 'net.dns.record[{$DNS_SERVER_IP},{$QUERY_DNS_RECORD},{$RECORD_TYPE},{$QUERY_TIMEOUT},{$TRIES_NUMBER},{$USE_PROTOCOL}]'
+          value_type: CHAR
+          tags:
+            - tag: dns
+              value: status
+          triggers:
+            - uuid: bf27060679df43c7ab03b3f948043909
+              expression: 'countunique(/Simple DNS check/net.dns.record[{$DNS_SERVER_IP},{$QUERY_DNS_RECORD},{$RECORD_TYPE},{$QUERY_TIMEOUT},{$TRIES_NUMBER},{$USE_PROTOCOL}],1h)>1'
+              name: 'DNS record changed'
+              priority: INFO
+              tags:
+                - tag: dns
+                  value: status
+        - uuid: a979329d40214f18906fd0fdda321cc5
+          name: 'DNS resolution status'
+          key: 'net.dns[{$DNS_SERVER_IP},{$QUERY_DNS_RECORD},{$RECORD_TYPE},{$QUERY_TIMEOUT},{$TRIES_NUMBER},{$USE_PROTOCOL}]'
+          history: 365d
+          valuemap:
+            name: 'Resolution state'
+          tags:
+            - tag: dns
+              value: status
+          triggers:
+            - uuid: 0ec68c9c7ed14e9398514c31efc00fd4
+              expression: 'last(/Simple DNS check/net.dns[{$DNS_SERVER_IP},{$QUERY_DNS_RECORD},{$RECORD_TYPE},{$QUERY_TIMEOUT},{$TRIES_NUMBER},{$USE_PROTOCOL}],#1)=0'
+              name: 'DNS resolution failed'
+              priority: HIGH
+              tags:
+                - tag: dns
+                  value: status
+      tags:
+        - tag: class
+          value: dns
+      macros:
+        - macro: '{$DNS_SERVER_IP}'
+          value: 8.8.8.8
+        - macro: '{$QUERY_DNS_RECORD}'
+          value: www.google.com
+        - macro: '{$QUERY_TIMEOUT}'
+          value: '1'
+          description: sec
+        - macro: '{$RECORD_TYPE}'
+          value: A
+        - macro: '{$TRIES_NUMBER}'
+          value: '2'
+        - macro: '{$USE_PROTOCOL}'
+          value: udp
+      valuemaps:
+        - uuid: a854e6e706aa475fa35b3d5244cac50c
+          name: 'Resolution state'
+          mappings:
+            - value: '0'
+              newvalue: Failure
+            - value: '1'
+              newvalue: Success
