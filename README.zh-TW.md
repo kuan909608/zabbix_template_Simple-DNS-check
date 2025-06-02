@@ -1,6 +1,6 @@
-# Zabbix 模板 - 簡易 DNS 檢查
+[English](README.md) | [繁體中文](README.zh-TW.md)
 
-[English version → README.md](./README.md)
+# Zabbix 模板 - 簡易 DNS 檢查
 
 此專案提供一個用於 Zabbix 的 YAML 模板，透過外部檢查的方式監控 DNS 查詢的可用性與回應時間，適用於簡單的 DNS 健康監控情境。
 
