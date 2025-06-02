@@ -1,3 +1,5 @@
+[English](README.md) | [繁體中文](README_zh-TW.md)
+
 # Zabbix Template - Simple DNS Check
 
 This project provides a Zabbix YAML template for checking DNS availability and response time using external checks. It is designed for lightweight DNS health monitoring scenarios.
