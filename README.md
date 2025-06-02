@@ -1,0 +1,1 @@
+# zabbix_template_Simple-DNS-check
